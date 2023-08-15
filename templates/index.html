@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Webcam Stream</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Webcam Stream</h1>
+    <img id="webcam-image" src="{% url 'webcam_stream' %}" alt="Webcam Stream" onload="onWebcamImageLoad()">
+    <h3 id="object-name">Detected Object: None</h3>
+
+    <script>
+        webcamImage = document.getElementById("webcam-image")
+        ObjectName = document.getElementById("object-name")
+
+        async function fetchObjectName() {
+            try {
+                const response = await fetch("detected_object"); 
+                if (response.ok) {
+                    const data = await response.json();
+                    const objectName = data.data;
+                    ObjectName.textContent = "Detected Object: " + objectName;
+                } else {
+                    console.error("Error fetching data from the API.");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        function onWebcamImageLoad() {
+            fetchObjectName();
+
+            setInterval(fetchObjectName, 2000);
+        }
+    </script>
+</body>
+</html>
