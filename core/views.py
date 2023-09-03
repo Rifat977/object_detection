@@ -1,6 +1,4 @@
-import os
-import cv2
-import json
+import os, socket, cv2, json
 import numpy as np 
 from django.conf import settings
 from django.shortcuts import render
@@ -9,6 +7,9 @@ from django.http import StreamingHttpResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse, HttpResponseServerError
 from .models import DetectedObject
+
+ESP_IP = "ESP_SERVER_IP_ADDRESS"
+ESP_PORT = 123 
 
 
 def update_object(object_name):
@@ -84,7 +85,6 @@ def get_frames():
         cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
         
-        # Capture and process frames
         while True:
             ret, frame = cap.read()
             if not ret:
@@ -94,10 +94,8 @@ def get_frames():
             frame = cv2.flip(frame, 1)
             frame = cv2.resize(frame, (640, 480))
 
-            # Process the frame using a separate thread
             result = process_frame(frame, net, classes, layer_names)
 
-            # Yield the processed frame
             yield result
 
     except Exception as e:
