@@ -1,35 +1,25 @@
-import socket
-import cv2
 import numpy as np
+import cv2
 
-ESP_IP = "ESP_SERVER_IP_ADDRESS"
-ESP_PORT = 12345
+vcap = cv2.VideoCapture('http://192.168.0.101:81/stream')
+if not vcap.isOpened():
+   print("File Cannot be Opened")
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((ESP_IP, ESP_PORT))
-
-cv2.namedWindow("Stream :)", cv2.WINDOW_NORMAL)
-
-while True:
-    try:
-        frame_data = b''
-        while True:
-            packet = client_socket.recv(4096)
-            if not packet:
-                break
-            frame_data += packet
-
-        frame_array = np.frombuffer(frame_data, dtype=np.uint8)
-
-        frame = cv2.imdecode(frame_array, cv2.IMREAD_COLOR)
-
-        cv2.imshow("Video Stream", frame)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+while(True):
+    # Capture frame-by-frame
+    ret, frame = vcap.read()
+    #print cap.isOpened(), ret
+    if frame is not None:
+        # Display the resulting frame
+        cv2.imshow('frame',frame)
+        # Press q to close the video windows before it ends if you want
+        if cv2.waitKey(22) & 0xFF == ord('q'):
             break
-    except Exception as e:
-        print(f"Error: {e}")
+    else:
+        print("Frame is not none")
         break
 
+# When everything done, release the capture
+vcap.release()
 cv2.destroyAllWindows()
-client_socket.close()
+print("Stop")
