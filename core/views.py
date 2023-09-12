@@ -82,8 +82,8 @@ def get_frames():
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
 
-        cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
-        # cap = cv2.VideoCapture(0)
+        # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
+        cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
         
         while True:
@@ -112,6 +112,6 @@ def index(request):
     return render(request, 'index.html')
 
 def detected_object(request):
-    detected_obj = DetectedObject.objects.first().name
+    detected_obj = DetectedObject.objects.first().name.title()
     print(detected_obj)
     return JsonResponse({'data':detected_obj})
