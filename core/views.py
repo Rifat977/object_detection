@@ -7,6 +7,7 @@ from django.http import StreamingHttpResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse, HttpResponseServerError
 from .models import DetectedObject
+import face_recognition
 
 ESP_IP = "ESP_SERVER_IP_ADDRESS"
 ESP_PORT = 123 
@@ -81,6 +82,8 @@ def get_frames():
         classes = ['None']
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
+            
+        known_persons = []
 
         # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
         cap = cv2.VideoCapture(0)
@@ -91,6 +94,28 @@ def get_frames():
             if not ret:
                 print("Unable to capture frame.")
                 break
+
+            face_locations = face_recognition.face_locations(frame)
+            face_encodings = face_recognition.face_encodings(frame, face_locations)
+
+            for face_encoding in face_encodings:
+                match = None
+                for person in known_persons:
+                    name, known_face_encoding = person
+                    matches = face_recognition.compare_faces([known_face_encoding], face_encoding)
+                    if True in matches:
+                        match = name
+                        break
+
+                if match:
+                    print(f"Detected: {match}")
+                else:
+                    print("Unknown")
+
+                    person_name = input("Enter person's name (or press Enter to skip):")
+                    if person_name:
+                        known_persons.append((person_name, face_encoding))
+                        print(f"Saved: {person_name}")
 
             frame = cv2.flip(frame, 1)
             frame = cv2.resize(frame, (640, 480))
