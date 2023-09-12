@@ -82,7 +82,8 @@ def get_frames():
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
 
-        cap = cv2.VideoCapture("http://192.168.0.101:81/stream")
+        cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
+        # cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
         
         while True:

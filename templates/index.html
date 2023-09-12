@@ -1,13 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Webcam Stream</title>
+    <title>Eye-Catching Webcam Stream</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Custom CSS for Eye-Catching Design */
+        body {
+            background-color: #f0f0f0; /* Light gray background */
+        }
+        .container {
+            background-color: #fff; /* White container background */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow for container */
+        }
+        h1 {
+            color: #007bff; /* Blue header text */
+            text-align: center;
+        }
+        #webcam-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc; /* Gray border for the image */
+        }
+        #object-name {
+            color: #28a745; /* Green text for detected object */
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Webcam Stream</h1>
-    <img id="webcam-image" src="{% url 'webcam_stream' %}" alt="Webcam Stream" onload="onWebcamImageLoad()">
-    <h3 id="object-name">Detected Object: None</h3>
+    <div class="container mt-4">
+        <h1>Stream</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <img id="webcam-image" src="{% url 'webcam_stream' %}" alt="Webcam Stream" onload="onWebcamImageLoad()">
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-6">
+                <h3 id="object-name">Detected Object: None</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
         webcamImage = document.getElementById("webcam-image")
