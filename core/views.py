@@ -17,7 +17,7 @@ known_faces = {
     "Md. Rejwan Rashid": "know_faces/rifat2.jpg",
     "Dr. Imran Mahmud": "know_faces/imarn_sir.png",
     "Md Kaimujjaman Biplob": "know_faces/biplob.png",
-    "Arif Reza": "know_faces/reza.jpg",
+    "Playboy Reza": "know_faces/reza.jpg",
 }
 
 known_face_names = []
