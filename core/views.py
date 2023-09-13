@@ -12,6 +12,23 @@ import face_recognition
 ESP_IP = "ESP_SERVER_IP_ADDRESS"
 ESP_PORT = 123 
 
+known_faces = {
+    "Abdullah Al Mamun": "know_faces/rifat1.jpg",
+    "Md. Rejwan Rashid": "know_faces/rifat2.jpg",
+    "Dr. Imran Mahmud": "know_faces/imarn_sir.png",
+    "Md Kaimujjaman Biplob": "know_faces/biplob.png",
+    "Arif Reza": "know_faces/reza.jpg",
+}
+
+known_face_names = []
+known_face_encodings = []
+
+for name, image_path in known_faces.items():
+    image = face_recognition.load_image_file(os.path.join(os.getcwd(), image_path))
+    encoding = face_recognition.face_encodings(image)[0] 
+    known_face_names.append(name)
+    known_face_encodings.append(encoding)
+
 
 def update_object(object_name):
     first_detected_object = object_name
@@ -77,6 +94,7 @@ def process_frame(frame, net, classes, layer_names, name):
         b'--frame\r\n' b'Content-Type: image/jpeg\r\n' b'Object-Name:' + detected_objects.encode() + b'\r\n\r\n' + frame_data + b'\r\n'
     )
 
+
 def get_frames():
     try:
         yolov3_weights_path = os.path.join(settings.BASE_DIR, "darknet", "yolov3.weights")
@@ -86,16 +104,6 @@ def get_frames():
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
             
-        known_face_images = [
-            face_recognition.load_image_file(os.getcwd() + "/know_faces/rifat1.jpg"),
-            face_recognition.load_image_file(os.getcwd() + "/know_faces/rifat2.jpg"),
-            face_recognition.load_image_file(os.getcwd() + "/know_faces/rejwan.jpg"),
-            face_recognition.load_image_file(os.getcwd() + "/know_faces/imarn_sir.png"),
-            face_recognition.load_image_file(os.getcwd() + "/know_faces/biplob.png"),
-        ]
-        known_face_encodings = [face_recognition.face_encodings(image)[0] for image in known_face_images]
-        known_face_names = ["Abdullah Al Mamun", "Abdullah Al Mamun", "Md. Rejwan Rashid", "Dr. Imran Mahmud", "Md Kaimujjaman Biplob"]
-
         # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
         cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
