@@ -91,9 +91,10 @@ def get_frames():
             face_recognition.load_image_file(os.getcwd() + "/know_faces/rifat2.jpg"),
             face_recognition.load_image_file(os.getcwd() + "/know_faces/rejwan.jpg"),
             face_recognition.load_image_file(os.getcwd() + "/know_faces/imarn_sir.png"),
+            face_recognition.load_image_file(os.getcwd() + "/know_faces/biplob.png"),
         ]
         known_face_encodings = [face_recognition.face_encodings(image)[0] for image in known_face_images]
-        known_face_names = ["Abdullah Al Mamun", "Abdullah Al Mamun", "Md. Rejwan Rashid", "Imran Mahmud"]
+        known_face_names = ["Abdullah Al Mamun", "Abdullah Al Mamun", "Md. Rejwan Rashid", "Dr. Imran Mahmud", "Md Kaimujjaman Biplob"]
 
         # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
         cap = cv2.VideoCapture(0)
