@@ -38,7 +38,7 @@ def update_to_null_value():
     else:
         DetectedObject.objects.create(name=first_detected_object)
 
-def process_frame(frame, net, classes, layer_names):
+def process_frame(frame, net, classes, layer_names, name):
     detected_objects = ""
     height, width = frame.shape[:2]
 
@@ -64,7 +64,10 @@ def process_frame(frame, net, classes, layer_names):
                 object_name = classes[class_id]
                 detected_objects = object_name
 
-                update_object(object_name)
+                if name is not None:
+                    update_object(name)
+                else:
+                    update_object(object_name)
 
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(frame, object_name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
@@ -83,13 +86,22 @@ def get_frames():
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
             
-        known_persons = []
+        known_face_images = [
+            face_recognition.load_image_file(os.getcwd() + "/know_faces/rifat1.jpg"),
+            face_recognition.load_image_file(os.getcwd() + "/know_faces/rifat2.jpg"),
+            face_recognition.load_image_file(os.getcwd() + "/know_faces/rejwan.jpg"),
+            face_recognition.load_image_file(os.getcwd() + "/know_faces/imarn_sir.png"),
+        ]
+        known_face_encodings = [face_recognition.face_encodings(image)[0] for image in known_face_images]
+        known_face_names = ["Abdullah Al Mamun", "Abdullah Al Mamun", "Md. Rejwan Rashid", "Imran Mahmud"]
 
         # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
         cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
         
+        
         while True:
+            name = None
             ret, frame = cap.read()
             if not ret:
                 print("Unable to capture frame.")
@@ -99,28 +111,20 @@ def get_frames():
             face_encodings = face_recognition.face_encodings(frame, face_locations)
 
             for face_encoding in face_encodings:
-                match = None
-                for person in known_persons:
-                    name, known_face_encoding = person
-                    matches = face_recognition.compare_faces([known_face_encoding], face_encoding)
-                    if True in matches:
-                        match = name
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+
+                for i, match in enumerate(matches):
+                    if match:
+                        name = known_face_names[i]
                         break
 
-                if match:
-                    print(f"Detected: {match}")
-                else:
-                    print("Unknown")
-
-                    person_name = input("Enter person's name (or press Enter to skip):")
-                    if person_name:
-                        known_persons.append((person_name, face_encoding))
-                        print(f"Saved: {person_name}")
+                print(name)
+                update_object(name)
 
             frame = cv2.flip(frame, 1)
             frame = cv2.resize(frame, (640, 480))
 
-            result = process_frame(frame, net, classes, layer_names)
+            result = process_frame(frame, net, classes, layer_names, name)
 
             yield result
 

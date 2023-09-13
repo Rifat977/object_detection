@@ -32,11 +32,11 @@
                         <span>
                             <i class="fas fa-eye fa-xl"></i>
                         </span>
-                        <span jclass="text-center">
-                            <span class="btn btn-sm btn-light" id="object-name">Loading...</span>
-                        </span>
                     </div>
                     <img class="card-img-top rounded-0" src="{% url 'webcam_stream' %}" alt="Webcam Stream" onload="onWebcamImageLoad()">
+                </div>
+                <div class="text-center card-header bg-light">
+                    It's: <span class="" id="object-name"></span>
                 </div>
             </div>
             <div class="col-md-6">
