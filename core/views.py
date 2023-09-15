@@ -8,6 +8,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse, HttpResponseServerError
 from .models import DetectedObject
 import face_recognition
+from imutils.video import VideoStream
+from imutils.video import FPS
 
 ESP_IP = "ESP_SERVER_IP_ADDRESS"
 ESP_PORT = 123 
@@ -17,7 +19,7 @@ known_faces = {
     "Md. Rejwan Rashid": "know_faces/rifat2.jpg",
     "Dr. Imran Mahmud": "know_faces/imarn_sir.png",
     "Md Kaimujjaman Biplob": "know_faces/biplob.png",
-    "Playboy Reza": "know_faces/reza.jpg",
+    "Reza": "know_faces/reza.jpg",
 }
 
 known_face_names = []
@@ -83,18 +85,21 @@ def process_frame(frame, net, classes, layer_names, name):
 
                 if name is not None:
                     update_object(name)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    cv2.putText(frame, name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 else:
                     update_object(object_name)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    cv2.putText(frame, object_name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(frame, object_name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
     _, buffer = cv2.imencode('.jpg', frame)
     frame_data = buffer.tobytes()
     return (
         b'--frame\r\n' b'Content-Type: image/jpeg\r\n' b'Object-Name:' + detected_objects.encode() + b'\r\n\r\n' + frame_data + b'\r\n'
     )
 
-
+ 
 def get_frames():
     try:
         yolov3_weights_path = os.path.join(settings.BASE_DIR, "darknet", "yolov3.weights")
@@ -104,7 +109,7 @@ def get_frames():
         with open(os.path.join(settings.BASE_DIR, "darknet", "data", "coco.names"), "r") as f:
             classes = f.read().strip().split("\n")
             
-        # cap = cv2.VideoCapture("http://192.168.0.105:81/stream")
+        # cap = cv2.VideoCapture("http://192.168.221.158:81/stream")
         cap = cv2.VideoCapture(0)
         layer_names = net.getUnconnectedOutLayersNames()
         
